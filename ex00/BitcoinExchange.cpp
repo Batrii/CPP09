@@ -1,6 +1,9 @@
 #include "BitcoinExchange.hpp"
 
-// BitcoinExchange::BitcoinExchange()
+BitcoinExchange::BitcoinExchange()
+{
+    loadExchangeRates("data.csv");
+}
 
 BitcoinExchange::BitcoinExchange(std::string filename)
 {
@@ -49,3 +52,71 @@ void BitcoinExchange::loadExchangeRates(const std::string& filename)
     file.close();
 }
 
+bool BitcoinExchange::isValidDate(const std::string& date)
+{
+    if (date.length() != 10 || date[4] != '-' || date[7] != '-')
+        return false;
+    int year = std::atoi(date.substr(0, 4).c_str());
+    int month = std::atoi(date.substr(5, 2).c_str());
+    int day = std::atoi(date.substr(8, 2).c_str());
+    if (month < 1 || month > 12 || day < 1 || day > 31)
+        return false;
+    return true;
+}
+
+bool BitcoinExchange::isValidValue(const std::string& valueStr, double& value)
+{
+    std::stringstream ss(valueStr);
+    ss >> value;
+    if (ss.fail() || !ss.eof() || value < 0 || value > 1000)
+        return false;
+    return true;
+}
+
+void BitcoinExchange::processInputFile(const std::string& inputFile)
+{
+    std::ifstream file(inputFile);
+    if (!file.is_open())
+    {
+        std::cerr << "Error: Could not open input file: " << inputFile << std::endl;
+        return;
+    }
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.find("date") != std::string::npos)
+            continue;
+        size_t pipePos = line.find('|');
+        if (pipePos != std::string::npos)
+        {
+            std::string date = line.substr(0, pipePos - 1);
+            std::string valueStr = line.substr(pipePos + 2);
+            double value;
+            if (!isValidDate(date))
+            {
+                std::cerr << "Error: Invalid date => " << date << std::endl;
+                continue;
+            }
+            if (!isValidValue(valueStr, value))
+            {
+                std::cerr << "Error: Invalid value => " << valueStr << std::endl;
+                continue;
+            }
+            std::map<std::string, double>::iterator it = exchangeRates.lower_bound(date);
+            if (it == exchangeRates.end() || it->first != date)
+            {
+                if (it != exchangeRates.begin())
+                    --it;
+                else
+                {
+                    std::cerr << "Error: No exchange rate available for date => " << date << std::endl;
+                    continue;
+                }
+            }
+            double rate = it->second;
+            double result = value * rate;
+            std::cout << date << " => " << value << " = " << std::fixed << std::setprecision(2) << result << std::endl;
+        }
+    }
+    file.close();
+}
