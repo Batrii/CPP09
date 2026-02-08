@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <cstdlib>
 
 class BitcoinExchange
 {
@@ -14,7 +15,7 @@ class BitcoinExchange
 
         void loadExchangeRates(const std::string& filename);
         bool isValidDate(const std::string& date);
-        bool isValidValue(const std::string& valueStr, double& value);
+        int isValidValue(const std::string& valueStr, double& value);
     public:
         BitcoinExchange();
         BitcoinExchange(std::string filename);
