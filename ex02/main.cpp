@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     pmergeMe.print_array(bigger);
     end = clock();
     // the result in us
-    double time_taken = double(end - start) * 1000000 / CLOCKS_PER_SEC;
+    double time_taken = static_cast<double>(end - start) * 1000000 / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << numbers.size() << " elements with std::vector : " << time_taken << " us" << std::endl;
 
     start = clock();
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     pmergeMe.insert_smaller_into_bigger(bigger1, smaller1, leftover, has_leftover);
 
     end = clock();
-    time_taken = double(end - start) * 1000000 / CLOCKS_PER_SEC;
+    time_taken = static_cast<double>(end - start) * 1000000 / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << numbers_deque.size() << " elements with std::deque : " << time_taken << " us" << std::endl;
     return 0;
 }
