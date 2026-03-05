@@ -25,6 +25,17 @@ BitcoinExchange::~BitcoinExchange()
 {
 }
 
+
+static std::string trim(std::string &str)
+{
+    size_t i = 0;
+    size_t j = str.length() - 1;
+    while (i < str.length() && std::isspace(str[i]))
+        i++;
+    while (j > i && std::isspace(str[j]))
+        j--;
+    return str.substr(i, j - i + 1);
+}
 void BitcoinExchange::loadExchangeRates(const std::string& filename)
 {
     std::ifstream file(filename.c_str());
@@ -38,12 +49,13 @@ void BitcoinExchange::loadExchangeRates(const std::string& filename)
     {
         if (line.find("date") != std::string::npos)
             continue;
-        size_t commaPos = line.find(',');
+        std::string trimmedLine = trim(line);
+        size_t commaPos = trimmedLine.find(',');
         if (commaPos != std::string::npos)
         {
-            std::string date = line.substr(0, commaPos);
+            std::string date = trimmedLine.substr(0, commaPos);
             std::stringstream doubleValue;
-            doubleValue << line.substr(commaPos + 1);
+            doubleValue << trimmedLine.substr(commaPos + 1);
             double rate;
             doubleValue >> rate;
             exchangeRates[date] = rate;
@@ -97,12 +109,8 @@ void BitcoinExchange::processInputFile(const std::string& inputFile)
     {
         if (line.find("date") != std::string::npos)
             continue;
-        if (line.length() < 14)
-        {
-            std::cerr << "Error: bad input => " << line << std::endl;
-            continue;
-        }
-        size_t pipePos = line.find('|');
+        std::string trimmedLine = trim(line);
+        size_t pipePos = trimmedLine.find('|');
         if (pipePos == std::string::npos)
         {
             std::cerr << "Error: bad input => " << line << std::endl;
@@ -110,8 +118,10 @@ void BitcoinExchange::processInputFile(const std::string& inputFile)
         }
         if (pipePos != std::string::npos)
         {
-            std::string date = line.substr(0, pipePos - 1);
-            std::string valueStr = line.substr(pipePos + 2);
+            std::string dateStr = trimmedLine.substr(0, pipePos);
+            std::string date = trim(dateStr);
+            std::string valPart = trimmedLine.substr(pipePos + 1);
+            std::string valueStr = trim(valPart);
             double value;
             if (!isValidDate(date))
             {
