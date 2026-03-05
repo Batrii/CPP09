@@ -42,30 +42,19 @@ int main(int argc, char **argv)
     start = clock();
     PmergeMe pmergeMe(numbers);
 
-    std::vector<std::pair<int, int> > pairs;
-    std::deque<std::pair<int, int> > pairs1;
-    std::vector<int> bigger, smaller;
-    std::deque<int> bigger1, smaller1;
-    int leftover = 0;
-    bool has_leftover = false;
+
     std::cout << "Before: ";
     pmergeMe.print_array(numbers); 
-    pmergeMe.make_pairs(numbers, pairs, leftover, has_leftover);
-    pmergeMe.sort_pairs(pairs);
-    pmergeMe.extract_bigger_smaller(pairs, bigger, smaller);
-    pmergeMe.insert_smaller_into_bigger(bigger, smaller, leftover, has_leftover);
+    pmergeMe.ford_johnson_sort(numbers);
     std::cout << "After: ";
-    pmergeMe.print_array(bigger);
+    pmergeMe.print_array(numbers);
     end = clock();
     // the result in us
     double time_taken = static_cast<double>(end - start) * 1000000 / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << numbers.size() << " elements with std::vector : " << time_taken << " us" << std::endl;
 
     start = clock();
-    pmergeMe.make_pairs(numbers_deque, pairs1, leftover, has_leftover);
-    pmergeMe.sort_pairs(pairs1);
-    pmergeMe.extract_bigger_smaller(pairs1, bigger1, smaller1);
-    pmergeMe.insert_smaller_into_bigger(bigger1, smaller1, leftover, has_leftover);
+    pmergeMe.ford_johnson_sort(numbers_deque);
 
     end = clock();
     time_taken = static_cast<double>(end - start) * 1000000 / CLOCKS_PER_SEC;

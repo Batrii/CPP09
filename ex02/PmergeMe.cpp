@@ -43,16 +43,19 @@ void PmergeMe::sort_pairs(std::vector<std::pair<int, int> > &pairs)
     }
 }
 
-static bool compare_by_second(const std::pair<int, int> &a, const std::pair<int, int> &b)
-{
-    return a.second < b.second;
-}
 
-void PmergeMe::extract_bigger_smaller(std::vector<std::pair<int, int> > &pairs, std::vector<int> &bigger, std::vector<int> &smaller)
-{
-    // [1 8] [2 6]
-    std::sort(pairs.begin(), pairs.end(), compare_by_second);
+void PmergeMe::ford_johnson_sort(std::vector<int> &arr){
+    if (arr.size() <= 1)
+        return;
+    
+    std::vector<std::pair<int, int> > pairs;
+    int leftover;
+    bool has_leftover;
 
+    make_pairs(arr, pairs, leftover, has_leftover);
+    sort_pairs(pairs);
+    std::vector<int> bigger;
+    std::vector<int> smaller;
     size_t i = 0;
     while (i < pairs.size())
     {
@@ -60,6 +63,9 @@ void PmergeMe::extract_bigger_smaller(std::vector<std::pair<int, int> > &pairs, 
         smaller.push_back(pairs[i].first);
         i++;
     }
+    ford_johnson_sort(bigger);
+    insert_smaller_into_bigger(bigger, smaller, leftover, has_leftover);
+    arr = bigger;
 }
 
 static std::vector<int> build_insertion_order(int n)
@@ -91,19 +97,12 @@ void PmergeMe::insert_smaller_into_bigger(std::vector<int> &bigger, std::vector<
     if (smaller.empty())
         return;
 
-    bigger.insert(bigger.begin(), smaller[0]);
-
     std::vector<int> order = build_insertion_order(static_cast<int>(smaller.size()));
 
     size_t i = 0;
     while (i < order.size())
     {
         int idx = order[i];
-        if (idx == 0)
-        {
-            i++;
-            continue; // already inserted
-        }
         if (idx >= static_cast<int>(smaller.size()))
         {
             i++;
@@ -152,9 +151,19 @@ void PmergeMe::sort_pairs(std::deque<std::pair<int, int> > &pairs){
         i++;
     }
 }
-void PmergeMe::extract_bigger_smaller(std::deque<std::pair<int, int> > &pairs, std::deque<int> &bigger, std::deque<int> &smaller){
-    std::sort(pairs.begin(), pairs.end(), compare_by_second);
 
+void PmergeMe::ford_johnson_sort(std::deque<int> &arr){
+    if (arr.size() <= 1)
+        return;
+    
+    std::deque<std::pair<int, int> > pairs;
+    int leftover;
+    bool has_leftover;
+
+    make_pairs(arr, pairs, leftover, has_leftover);
+    sort_pairs(pairs);
+    std::deque<int> bigger;
+    std::deque<int> smaller;
     size_t i = 0;
     while (i < pairs.size())
     {
@@ -162,12 +171,13 @@ void PmergeMe::extract_bigger_smaller(std::deque<std::pair<int, int> > &pairs, s
         smaller.push_back(pairs[i].first);
         i++;
     }
+    ford_johnson_sort(bigger);
+    insert_smaller_into_bigger(bigger, smaller, leftover, has_leftover);
+    arr = bigger;
 }
 void PmergeMe::insert_smaller_into_bigger(std::deque<int> &bigger, std::deque<int> &smaller, int &leftover, bool has_leftover){
     if (smaller.empty())
         return;
-
-    bigger.push_front(smaller[0]);
 
     std::vector<int> order = build_insertion_order(static_cast<int>(smaller.size()));
 
@@ -175,11 +185,6 @@ void PmergeMe::insert_smaller_into_bigger(std::deque<int> &bigger, std::deque<in
     while (i < order.size())
     {
         int idx = order[i];
-        if (idx == 0)
-        {
-            i++;
-            continue; // already inserted
-        }
         if (idx >= static_cast<int>(smaller.size()))
         {
             i++;
