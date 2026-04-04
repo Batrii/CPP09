@@ -1,17 +1,13 @@
 #include "PmergeMe.hpp"
 #include <algorithm>
 
-PmergeMe::PmergeMe() : arr1(), arr2(){}
-PmergeMe::PmergeMe(const std::vector<int> arr1) : arr1(arr1), arr2(){}
-PmergeMe::PmergeMe(const std::deque<int> arr2) : arr1(), arr2(arr2){}
-PmergeMe::PmergeMe(const PmergeMe &other) : arr1(other.arr1), arr2(other.arr2){}
-PmergeMe& PmergeMe::operator=(const PmergeMe &other)
+PmergeMe::PmergeMe(){}
+PmergeMe::PmergeMe(const PmergeMe &other)
 {
-    if (this != &other)
-    {
-        arr1 = other.arr1;
-        arr2 = other.arr2;
-    }
+    (void)other;
+}
+PmergeMe& PmergeMe::operator=(const PmergeMe &other){
+    (void)other;
     return *this;
 }
 PmergeMe::~PmergeMe() {}
@@ -87,7 +83,7 @@ static std::vector<int> build_insertion_order(int n)
         int low = jacob[k - 1];
         // Insert from high down to low+1 (descending within each group)
         for (int i = high; i > low; i--)
-            order.push_back(i - 1); // convert to 0-indexed
+            order.push_back(i - 1);
     }
     return order;
 }

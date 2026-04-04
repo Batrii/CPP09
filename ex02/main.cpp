@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     if (put_args_in_vector_deque(argc, argv, numbers, numbers_deque) != 0)
         return 1;
     clock_t start, end;
-    PmergeMe pmergeMe(numbers);
+    PmergeMe pmergeMe;
     
     
     std::cout << "Before: ";

@@ -7,13 +7,8 @@
 #include <deque>
 
 class PmergeMe{
-    private:
-        std::vector<int> arr1;
-        std::deque<int> arr2;
     public:
         PmergeMe();
-        PmergeMe(const std::vector<int> arr1);
-        PmergeMe(const std::deque<int> arr1);
         PmergeMe(const PmergeMe &other);
         PmergeMe& operator=(const PmergeMe &other);
         ~PmergeMe();
